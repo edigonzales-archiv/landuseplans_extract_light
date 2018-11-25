@@ -15,11 +15,15 @@ public class ROL {
     
     private int areaShare;
     
+    private int parcelArea;
+    
     private int lengthShare;
     
     private int nrOfPoints;
     
     private double partInPercent;
+    
+    private String geometryType;
 
     public int getT_id() {
         return t_id;
@@ -77,6 +81,14 @@ public class ROL {
         this.areaShare = areaShare;
     }
 
+    public int getParcelArea() {
+        return parcelArea;
+    }
+
+    public void setParcelArea(int parcelArea) {
+        this.parcelArea = parcelArea;
+    }
+
     public int getLengthShare() {
         return lengthShare;
     }
@@ -99,5 +111,13 @@ public class ROL {
 
     public void setPartInPercent(double partInPercent) {
         this.partInPercent = partInPercent;
+    }
+
+    public String getGeometryType() {
+        return geometryType;
+    }
+
+    public void setGeometryType(String geometryType) {
+        this.geometryType = geometryType;
     }
 }

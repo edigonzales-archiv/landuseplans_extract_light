@@ -22,3 +22,57 @@ FROM
   ON ST_Intersects(ST_PointOnSurface(grundstueck.geometrie), grundbuchkreis.perimeter)
 WHERE
   egrid = 'CH154332870676'
+ ;
+ 
+WITH parcel AS (
+  SELECT
+     flaechenmass AS area,
+     geometrie AS geometry
+  FROM
+    agi_mopublic_pub.mopublic_grundstueck
+  WHERE
+    egrid = 'CH987632068201'
+)
+SELECT
+  foo.t_id,
+  'LandUsePlans' AS theme,
+  'Grundnutzung' AS subtheme,
+  substring(foo.typ_kt FROM 1 FOR 4) AS typecode,
+  'inForce' AS lawstatuscode,
+  foo.typ_bezeichnung AS information,
+  ST_Area(foo.geom) AS areashare,
+  area
+FROM
+(
+  SELECT
+    bar.t_id,
+    bar.typ_kt,
+    bar.typ_code_kommunal,
+    bar.typ_bezeichnung,    
+    ST_Union(geom) AS geom,
+    area
+  FROM
+  (
+    SELECT
+      grundnutzung.t_id,
+      grundnutzung.typ_kt,
+      grundnutzung.typ_code_kommunal,
+      grundnutzung.typ_bezeichnung,
+      (ST_Dump(ST_CollectionExtract(ST_Intersection(parcel.geometry, grundnutzung.geometrie), 3))).geom,
+      area
+    FROM
+      parcel
+      LEFT JOIN arp_npl_pub.nutzungsplanung_grundnutzung AS grundnutzung
+      ON ST_Intersects(parcel.geometry, grundnutzung.geometrie)
+  ) AS bar
+  GROUP BY
+    bar.t_id,
+    bar.typ_kt,
+    bar.typ_code_kommunal,
+    bar.typ_bezeichnung,
+    area
+) AS foo
+ORDER BY
+  foo.typ_kt
+;
+ 

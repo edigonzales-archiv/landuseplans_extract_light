@@ -1,5 +1,6 @@
 package ch.so.agi.landuseplansextract.webservice.services;
 
+import java.math.BigDecimal;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -16,11 +17,10 @@ import ch.admin.geo.schemas.v_d.oereb._1_0.extract.GetExtractByIdResponseType;
 import ch.admin.geo.schemas.v_d.oereb._1_0.extractdata.Extract;
 import ch.admin.geo.schemas.v_d.oereb._1_0.extractdata.RealEstateDPR;
 import ch.admin.geo.schemas.v_d.oereb._1_0.extractdata.RealEstateType;
+import ch.admin.geo.schemas.v_d.oereb._1_0.extractdata.RestrictionOnLandownership;
 import ch.admin.geo.schemas.v_d.oereb._1_0.extractdata.CantonCode;
 import ch.so.agi.landuseplansextract.webservice.models.Parcel;
-import ch.so.agi.landuseplansextract.webservice.models.ROL;
 import ch.so.agi.landuseplansextract.webservice.dao.ParcelDAOImpl;
-import ch.so.agi.landuseplansextract.webservice.dao.RestrictionOnLandownershipDAOImpl;
 
 @Service
 public class GetExtractByIdResponseTypeServiceImpl implements GetExtractByIdResponseTypeService {
@@ -30,7 +30,7 @@ public class GetExtractByIdResponseTypeServiceImpl implements GetExtractByIdResp
     private ParcelDAOImpl parcelDAO;
     
     @Autowired
-    private RestrictionOnLandownershipDAOImpl restrictionOnLandownershipDAO;
+    private RestrictionOnLandownershipServiceImpl restrictionOnLandownershipService;
 
     @Override
     public GetExtractByIdResponseType getExtractById(String egrid) throws DatatypeConfigurationException {
@@ -61,18 +61,13 @@ public class GetExtractByIdResponseTypeServiceImpl implements GetExtractByIdResp
         realEstateDPR.setSubunitOfLandRegister(parcel.getSubunitOfLandRegister());
         realEstateDPR.setType(RealEstateType.fromValue(parcel.getRealEstateType()));
         
-        List<ROL> restrictionOnLandownershipList = restrictionOnLandownershipDAO.getRestrictionOnLandownershipByEgrid(egrid);
-        for (ROL restrictionOnLandownership : restrictionOnLandownershipList) {
-            log.info(restrictionOnLandownership.getInformation());
-        }
-        
-        log.info(String.valueOf(restrictionOnLandownershipList.size()));
-
+        List<RestrictionOnLandownership> restrictionOnLandownershipList = restrictionOnLandownershipService.getRestrictionOnLandownership(egrid);
+        for (RestrictionOnLandownership restrictionOnLandownership : restrictionOnLandownershipList) {
+            realEstateDPR.getRestrictionOnLandownership().add(restrictionOnLandownership);
+        }              
         
         extract.setRealEstate(realEstateDPR);
         
-        
-
         // Creation date
         GregorianCalendar cal = new GregorianCalendar();
         DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
