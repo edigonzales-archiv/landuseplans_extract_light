@@ -50,6 +50,7 @@ public class RestrictionOnLandownershipServiceImpl implements RestrictionOnLando
         List<ROL> rolListErschliessungFlaeche = restrictionOnLandownershipDAO.getErschliessungFlaecheByEgrid(egrid);
         List<ROL> rolListErschliessungLinie = restrictionOnLandownershipDAO.getErschliessungLinieByEgrid(egrid);
         List<ROL> rolListErschliessungPunkt = restrictionOnLandownershipDAO.getErschliessungPunktByEgrid(egrid);
+        List<ROL> rolListEmpfindlichkeitsstufen = restrictionOnLandownershipDAO.getEmpfindlichkeitsstufenByEgrid(egrid);
         
         List<ROL> rolList = new ArrayList<ROL>();
         rolList.addAll(rolListGrundnutzung);
@@ -59,13 +60,15 @@ public class RestrictionOnLandownershipServiceImpl implements RestrictionOnLando
         rolList.addAll(rolListErschliessungFlaeche);
         rolList.addAll(rolListErschliessungLinie);
         rolList.addAll(rolListErschliessungPunkt);
-       
+        rolList.addAll(rolListEmpfindlichkeitsstufen);
+
         for (ROL rol : rolList) {
             log.info(rol.getInformation());
             RestrictionOnLandownership restrictionOnLandownership = objectFactory.createRestrictionOnLandownership();
             
             if (rol.getGeometryType().contains("POLYGON")) {
                 restrictionOnLandownership.setAreaShare(rol.getAreaShare());
+                restrictionOnLandownership.setPartInPercent(new BigDecimal(100.0 * rol.getAreaShare() / rol.getParcelArea()));
             } else if (rol.getGeometryType().contains("LINESTRING")) {
                 restrictionOnLandownership.setLengthShare(rol.getLengthShare());
             } else if (rol.getGeometryType().contains("POINT")) {
@@ -82,20 +85,26 @@ public class RestrictionOnLandownershipServiceImpl implements RestrictionOnLando
             Lawstatus lawStatus = objectFactory.createLawstatus();
             lawStatus.setCode(LawstatusCode.fromValue(rol.getLawStatusCode()));
             
-            LocalisedText localisedText = objectFactory.createLocalisedText();
-            localisedText.setLanguage(LanguageCode.fromValue("de"));  
-            localisedText.setText("in Kraft");
-            lawStatus.setText(localisedText);
+            LocalisedText localisedTextLawStatus = objectFactory.createLocalisedText();
+            localisedTextLawStatus.setLanguage(LanguageCode.fromValue("de"));  
+            localisedTextLawStatus.setText("in Kraft");
+            lawStatus.setText(localisedTextLawStatus);
             restrictionOnLandownership.setLawstatus(lawStatus);
             
-            restrictionOnLandownership.setPartInPercent(new BigDecimal(100.0 * rol.getAreaShare() / rol.getParcelArea()));
             restrictionOnLandownership.setSubTheme(rol.getSubTheme());
             
             Theme theme = objectFactory.createTheme();
             theme.setCode(rol.getTheme());
-            localisedText.setLanguage(LanguageCode.fromValue("de"));  
-            localisedText.setText("Nutzungsplanung");
-            theme.setText(localisedText);
+            LocalisedText localisedTextTheme = objectFactory.createLocalisedText();
+            localisedTextTheme.setLanguage(LanguageCode.fromValue("de"));  
+  
+            if (rol.getTheme().equalsIgnoreCase("LandUsePlans")) {
+                localisedTextTheme.setText("Nutzungsplanung");
+            } else {
+                localisedTextTheme.setText("Lärmempfindlichkeitsstufen (in Nutzungszonen)");
+            }
+            
+            theme.setText(localisedTextTheme);
             restrictionOnLandownership.setTheme(theme);
             
             restrictionOnLandownership.setTypeCode(rol.getTypeCode());
@@ -114,35 +123,43 @@ public class RestrictionOnLandownershipServiceImpl implements RestrictionOnLando
                 legalProvision.setTextAtWeb(multiLingualUri);
                 
                 MultilingualText multilingualText = objectFactory.createMultilingualText();
-                localisedText = objectFactory.createLocalisedText();
-                localisedText.setLanguage(LanguageCode.fromValue("de"));
-                localisedText.setText(doc.getAbbreviation());
-                multilingualText.getLocalisedText().add(localisedText);
+                LocalisedText localisedTextAbbreviation = objectFactory.createLocalisedText();
+                localisedTextAbbreviation = objectFactory.createLocalisedText();
+                localisedTextAbbreviation.setLanguage(LanguageCode.fromValue("de"));
+                localisedTextAbbreviation.setText(doc.getAbbreviation());
+                multilingualText.getLocalisedText().add(localisedTextAbbreviation);
                 legalProvision.setAbbreviation(multilingualText);
                 
                 legalProvision.setCanton(CantonCode.SO);
                 legalProvision.setDocumentType(doc.getDocumenttype());
                 
-                lawStatus = objectFactory.createLawstatus();
-                lawStatus.setCode(LawstatusCode.fromValue(doc.getLawstatuscode()));
-                legalProvision.setLawstatus(lawStatus);
+                Lawstatus lawStatusDocument = objectFactory.createLawstatus();
+                lawStatusDocument.setCode(LawstatusCode.fromValue(doc.getLawstatuscode()));
+                LocalisedText localisedTextLawStatusDocument = objectFactory.createLocalisedText();
+                localisedTextLawStatusDocument.setLanguage(LanguageCode.fromValue("de"));  
+                localisedTextLawStatusDocument.setText("in Kraft");
+                lawStatusDocument.setText(localisedTextLawStatusDocument);
+
+                legalProvision.setLawstatus(lawStatusDocument);
                 
                 legalProvision.setMunicipality(doc.getMunicipality());
                 legalProvision.setOfficialNumber(doc.getOfficialnumber());
                 
-                multilingualText = objectFactory.createMultilingualText();
-                localisedText = objectFactory.createLocalisedText();
-                localisedText.setLanguage(LanguageCode.fromValue("de"));
-                localisedText.setText(doc.getOfficialtitle());
-                multilingualText.getLocalisedText().add(localisedText);
-                legalProvision.setOfficialTitle(multilingualText);
+                MultilingualText multilingualTextOfficialTitle = objectFactory.createMultilingualText();
+                LocalisedText localisedTextOfficialTitle = objectFactory.createLocalisedText();                
+                localisedTextOfficialTitle = objectFactory.createLocalisedText();
+                localisedTextOfficialTitle.setLanguage(LanguageCode.fromValue("de"));
+                localisedTextOfficialTitle.setText(doc.getOfficialtitle());
+                multilingualTextOfficialTitle.getLocalisedText().add(localisedTextOfficialTitle);
+                legalProvision.setOfficialTitle(multilingualTextOfficialTitle);
                 
-                multilingualText = objectFactory.createMultilingualText();
-                localisedText = objectFactory.createLocalisedText();
-                localisedText.setLanguage(LanguageCode.fromValue("de"));
-                localisedText.setText(doc.getTitle());
-                multilingualText.getLocalisedText().add(localisedText);
-                legalProvision.setTitle(multilingualText);
+                MultilingualText multilingualTextTitle = objectFactory.createMultilingualText();
+                LocalisedText localisedTextTitle = objectFactory.createLocalisedText();                                
+                localisedTextTitle = objectFactory.createLocalisedText();
+                localisedTextTitle.setLanguage(LanguageCode.fromValue("de"));
+                localisedTextTitle.setText(doc.getTitle());
+                multilingualTextTitle.getLocalisedText().add(localisedTextTitle);
+                legalProvision.setTitle(multilingualTextTitle);
                 
                 restrictionOnLandownership.getLegalProvisions().add(legalProvision);
             }

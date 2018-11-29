@@ -132,6 +132,8 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
                 "    bar.typ_bezeichnung,\n" + 
                 "    area\n" + 
                 ") AS foo\n" + 
+                "WHERE\n" +
+                "    substring(foo.typ_kt FROM 1 FOR 4) NOT IN ('N680','N681','N682','N683','N684','N685','N686')\n" +
                 "ORDER BY\n" + 
                 "  foo.typ_kt\n" + 
                 ";";
@@ -455,6 +457,70 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("egrid", egrid);
         List<ROL> restrictionOnLandownership = jdbcTemplate.query(sql, namedParameters, rowMapper);
                 
+        return restrictionOnLandownership;
+    }
+
+    @Override
+    public List<ROL> getEmpfindlichkeitsstufenByEgrid(String egrid) {
+        String sql = "WITH parcel AS (\n" + 
+                "  SELECT\n" + 
+                "     flaechenmass AS area,\n" + 
+                "     geometrie AS geometry\n" + 
+                "  FROM\n" + 
+                "    agi_mopublic_pub.mopublic_grundstueck\n" + 
+                "  WHERE\n" + 
+                "    egrid = :egrid\n" + 
+                ")\n" + 
+                "SELECT\n" + 
+                "  foo.t_id,\n" + 
+                "  'NoiseSensitivityLevels' AS theme,\n" + 
+                "  'Lärmempfindlichkeitsstufen (in Nutzungszonen)' AS subtheme,\n" + 
+                "  substring(foo.typ_kt FROM 1 FOR 4) AS typecode,\n" + 
+                "  'inForce' AS lawstatuscode,\n" + 
+                "  foo.typ_bezeichnung AS information,\n" + 
+                "  ST_Area(foo.geom) AS areashare,\n" + 
+                "  area AS parcelarea,\n" + 
+                "  geometrytype(foo.geom)\n" +                 
+                "FROM\n" + 
+                "(\n" + 
+                "  SELECT\n" + 
+                "    bar.t_id,\n" + 
+                "    bar.typ_kt,\n" + 
+                "    bar.typ_code_kommunal,\n" + 
+                "    bar.typ_bezeichnung,    \n" + 
+                "    ST_Union(geom) AS geom,\n" + 
+                "    area\n" + 
+                "  FROM\n" + 
+                "  (\n" + 
+                "    SELECT\n" + 
+                "      ueberlagerndeFestlegung.t_id,\n" + 
+                "      ueberlagerndeFestlegung.typ_kt,\n" + 
+                "      ueberlagerndeFestlegung.typ_code_kommunal,\n" + 
+                "      ueberlagerndeFestlegung.typ_bezeichnung,\n" + 
+                "      (ST_Dump(ST_CollectionExtract(ST_Intersection(parcel.geometry, ueberlagerndeFestlegung.geometrie), 3))).geom,\n" + 
+                "      area\n" + 
+                "    FROM\n" + 
+                "      parcel\n" + 
+                "      INNER JOIN arp_npl_pub.nutzungsplanung_ueberlagernd_flaeche AS ueberlagerndeFestlegung\n" + 
+                "      ON ST_Intersects(parcel.geometry, ueberlagerndeFestlegung.geometrie)\n" + 
+                "  ) AS bar\n" + 
+                "  GROUP BY\n" + 
+                "    bar.t_id,\n" + 
+                "    bar.typ_kt,\n" + 
+                "    bar.typ_code_kommunal,\n" + 
+                "    bar.typ_bezeichnung,\n" + 
+                "    area\n" + 
+                ") AS foo\n" + 
+                "WHERE\n" +
+                "    substring(foo.typ_kt FROM 1 FOR 4) IN ('N680','N681','N682','N683','N684','N685','N686')\n" +
+                "ORDER BY\n" + 
+                "  foo.typ_kt\n" + 
+                ";";    
+        
+        RowMapper<ROL> rowMapper = new BeanPropertyRowMapper<ROL>(ROL.class);
+        SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("egrid", egrid);
+        List<ROL> restrictionOnLandownership = jdbcTemplate.query(sql, namedParameters, rowMapper);
+        
         return restrictionOnLandownership;
     }
 

@@ -27,6 +27,8 @@ CH970687433258 (überlagernd)
 CH908806773208 (linie (wald und wanderweg))
 CH328910320651 (Punkte)
 CH233287066989 (Erschliessung Fläche)
+CH984332068714
+CH669932068034 (Erschliessung)
 http://localhost:8888/landuseplans/extract/xml/CH987632068201 (viele kleine Strasseflächen -> ST_Union eingeführt)
 http://localhost:8888/landuseplans/extract/xml/CH154332870676
 ```
@@ -34,3 +36,6 @@ http://localhost:8888/landuseplans/extract/xml/CH154332870676
 
 ## Notes
 Eigentich müsste über die t_id der Klasse "Typ" gegrouped werden. Diese ist im Pubmodell nicht vorhanden. Die Dokumente abfragen, würde auch über diese t_id gehen.
+
+## TODO
+- 0.?? Geometrien nicht exportieren.

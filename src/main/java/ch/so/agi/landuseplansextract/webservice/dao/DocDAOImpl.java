@@ -30,6 +30,54 @@ public class DocDAOImpl implements DocDAO {
                 "  arp_npl_pub.nutzungsplanung_grundnutzung\n" + 
                 "WHERE\n" + 
                 "  t_id = :t_id\n" + 
+                "UNION ALL\n" + 
+                "SELECT\n" + 
+                "  json_array_elements(dok_id::json) AS obj,\n" + 
+                "  dok_id::json \n" + 
+                "FROM\n" + 
+                "  arp_npl_pub.nutzungsplanung_ueberlagernd_flaeche\n" + 
+                "WHERE\n" + 
+                "  t_id = :t_id\n" + 
+                "UNION ALL\n" + 
+                "SELECT\n" + 
+                "  json_array_elements(dok_id::json) AS obj,\n" + 
+                "  dok_id::json \n" + 
+                "FROM\n" + 
+                "  arp_npl_pub.nutzungsplanung_ueberlagernd_linie\n" + 
+                "WHERE\n" + 
+                "  t_id = :t_id\n" + 
+                "UNION ALL\n" + 
+                "SELECT\n" + 
+                "  json_array_elements(dok_id::json) AS obj,\n" + 
+                "  dok_id::json \n" + 
+                "FROM\n" + 
+                "  arp_npl_pub.nutzungsplanung_ueberlagernd_punkt\n" + 
+                "WHERE\n" + 
+                "  t_id = :t_id\n" + 
+                "UNION ALL\n" + 
+                "SELECT\n" + 
+                "  json_array_elements(dok_id::json) AS obj,\n" + 
+                "  dok_id::json \n" + 
+                "FROM\n" + 
+                "  arp_npl_pub.nutzungsplanung_erschliessung_flaechenobjekt\n" + 
+                "WHERE\n" + 
+                "  t_id = :t_id\n" + 
+                "UNION ALL\n" + 
+                "SELECT\n" + 
+                "  json_array_elements(dok_id::json) AS obj,\n" + 
+                "  dok_id::json \n" + 
+                "FROM\n" + 
+                "  arp_npl_pub.nutzungsplanung_erschliessung_linienobjekt\n" + 
+                "WHERE\n" + 
+                "  t_id = :t_id\n" + 
+                "UNION ALL\n" + 
+                "SELECT\n" + 
+                "  json_array_elements(dok_id::json) AS obj,\n" + 
+                "  dok_id::json \n" + 
+                "FROM\n" + 
+                "  arp_npl_pub.nutzungsplanung_erschliessung_punktobjekt\n" + 
+                "WHERE\n" + 
+                "  t_id = :t_id\n" + 
                 ") \n" + 
                 "SELECT\n" + 
                 "  obj->>'titel' AS title,\n" + 

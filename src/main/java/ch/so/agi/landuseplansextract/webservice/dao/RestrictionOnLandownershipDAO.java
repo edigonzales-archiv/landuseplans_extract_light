@@ -61,4 +61,12 @@ public interface RestrictionOnLandownershipDAO {
      */
     List<ROL> getErschliessungPunktByEgrid(String egrid);
 
+    /** 
+     * Finds restrictions on landownership (Empfindlichkeitsstufen) by a given egrid.
+     * 
+     * @param egrid Egrid 
+     * @return RestrictionOnLandownership 
+     */
+    List<ROL> getEmpfindlichkeitsstufenByEgrid(String egrid);
+
 }
