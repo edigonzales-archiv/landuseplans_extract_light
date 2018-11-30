@@ -27,11 +27,7 @@ public class MainController {
     @RequestMapping(value="/extract/xml/{egrid:.{14,14}}", method=RequestMethod.GET,
             produces={MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<?> getExtractByXY (
-            @PathVariable("egrid") String egrid) throws DatatypeConfigurationException {
-                     
-        log.info("fubar");
-        log.info(egrid);
-        
+            @PathVariable("egrid") String egrid) throws DatatypeConfigurationException {        
         GetExtractByIdResponseType getExtractByIdResponseType = getExtractByIdResponseTypeService.getExtractById(egrid);
         return ResponseEntity.ok(getExtractByIdResponseType);
     }

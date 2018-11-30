@@ -474,7 +474,7 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
                 "SELECT\n" + 
                 "  foo.t_id,\n" + 
                 "  'NoiseSensitivityLevels' AS theme,\n" + 
-                "  'Lärmempfindlichkeitsstufen (in Nutzungszonen)' AS subtheme,\n" + 
+                "  'Lärmempfindlichkeitsstufen (in Nutzungszonen)' AS subtheme,\n" + 
                 "  substring(foo.typ_kt FROM 1 FOR 4) AS typecode,\n" + 
                 "  'inForce' AS lawstatuscode,\n" + 
                 "  foo.typ_bezeichnung AS information,\n" + 
