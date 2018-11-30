@@ -63,7 +63,6 @@ public class RestrictionOnLandownershipServiceImpl implements RestrictionOnLando
         rolList.addAll(rolListEmpfindlichkeitsstufen);
 
         for (ROL rol : rolList) {
-            log.info(rol.getInformation());
             RestrictionOnLandownership restrictionOnLandownership = objectFactory.createRestrictionOnLandownership();
             
             if (rol.getGeometryType().contains("POLYGON")) {
@@ -110,9 +109,7 @@ public class RestrictionOnLandownershipServiceImpl implements RestrictionOnLando
             restrictionOnLandownership.setTypeCode(rol.getTypeCode());
             
             List<Doc> docList = docDAO.getDocumentsByRestrictionOnLandownershipId(rol.getT_id());
-            for (Doc doc : docList) {
-                log.info(doc.getOfficialtitle());
-                
+            for (Doc doc : docList) {                
                 Document legalProvision = objectFactory.createDocument();
                 
                 MultilingualUri multiLingualUri = objectFactory.createMultilingualUri();
