@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -56,11 +55,31 @@ public class ParcelDAOImpl implements ParcelDAO {
         Parcel parcel = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper);
         return parcel;
     }
-
+    
+    // Liegenschaften only.
     @Override
     public List<Parcel> getParcelByXY(double easting, double northing) {
-        // TODO Auto-generated method stub
-        return null;
+        String sql = "SELECT\n" + 
+                "  t_id,\n" +
+                "  nummer AS number,\n" +                
+                "  CASE\n" + 
+                "    WHEN egrid IS NULL THEN 'CH-DUMMY'\n" + 
+                "    ELSE egrid\n" + 
+                "  END AS egrid,\n" + 
+                "  nbident AS identdn,\n" + 
+                "  'valid' AS validitytype,\n" + 
+                "  'RealEstate' AS realestatetype\n" + 
+                "FROM\n" + 
+                "  agi_mopublic_pub.mopublic_grundstueck\n" + 
+                "WHERE\n" + 
+                "  art = 0\n" + 
+                "AND\n" + 
+                "  ST_Intersects(ST_SetSRID(ST_MakePoint(:easting, :northing), 2056), geometrie)\n" + 
+                ";";
+        RowMapper<Parcel> rowMapper = new BeanPropertyRowMapper<Parcel>(Parcel.class);
+        SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("easting", easting).addValue("northing", northing);
+        List<Parcel> parcelList = jdbcTemplate.query(sql, namedParameters, rowMapper);
+        return parcelList;
     }
 
     @Override

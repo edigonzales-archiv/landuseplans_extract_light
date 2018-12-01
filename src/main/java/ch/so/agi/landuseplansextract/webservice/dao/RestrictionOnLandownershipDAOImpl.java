@@ -1,5 +1,7 @@
 package ch.so.agi.landuseplansextract.webservice.dao;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +71,9 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
                 "    bar.typ_code_kommunal,\n" + 
                 "    bar.typ_bezeichnung,\n" + 
                 "    area\n" + 
-                ") AS foo\n" + 
+                ") AS foo\n" +
+                "WHERE\n" + 
+                "  ST_Area(foo.geom) > 0.5\n" +
                 "ORDER BY\n" + 
                 "  foo.typ_kt\n" + 
                 ";";
@@ -77,7 +81,6 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
         RowMapper<ROL> rowMapper = new BeanPropertyRowMapper<ROL>(ROL.class);
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("egrid", egrid);
         List<ROL> restrictionOnLandownership = jdbcTemplate.query(sql, namedParameters, rowMapper);
-                
         return restrictionOnLandownership;
     }
 
@@ -134,6 +137,8 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
                 ") AS foo\n" + 
                 "WHERE\n" +
                 "    substring(foo.typ_kt FROM 1 FOR 4) NOT IN ('N680','N681','N682','N683','N684','N685','N686')\n" +
+                "AND\n" + 
+                "  ST_Area(foo.geom) > 0.5\n" +                
                 "ORDER BY\n" + 
                 "  foo.typ_kt\n" + 
                 ";";
@@ -196,6 +201,8 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
                 "    bar.typ_bezeichnung,\n" + 
                 "    area\n" + 
                 ") AS foo\n" + 
+                "WHERE\n" + 
+                "  ST_Length(foo.geom) > 0.5\n" +                
                 "ORDER BY\n" + 
                 "  foo.typ_kt\n" + 
                 ";";
@@ -321,7 +328,9 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
                 "    bar.typ_code_kommunal,\n" + 
                 "    bar.typ_bezeichnung,\n" + 
                 "    area\n" + 
-                ") AS foo\n" + 
+                ") AS foo\n" +
+                "WHERE\n" + 
+                "  ST_Area(foo.geom) > 0.5\n" +
                 "ORDER BY\n" + 
                 "  foo.typ_kt\n" + 
                 ";";
@@ -342,7 +351,7 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
                 "  FROM\n" + 
                 "    agi_mopublic_pub.mopublic_grundstueck\n" + 
                 "  WHERE\n" + 
-                "    egrid = 'CH233287066989'\n" + 
+                "    egrid = :egrid\n" + 
                 ")\n" + 
                 "SELECT\n" + 
                 "  foo.t_id,\n" + 
@@ -383,7 +392,9 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
                 "    bar.typ_code_kommunal,\n" + 
                 "    bar.typ_bezeichnung,\n" + 
                 "    area\n" + 
-                ") AS foo\n" + 
+                ") AS foo\n" +
+                "WHERE\n" + 
+                "  ST_Length(foo.geom) > 0.5\n" +                
                 "ORDER BY\n" + 
                 "  foo.typ_kt\n" + 
                 ";\n" + 
@@ -405,7 +416,7 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
                 "  FROM\n" + 
                 "    agi_mopublic_pub.mopublic_grundstueck\n" + 
                 "  WHERE\n" + 
-                "    egrid = 'CH328910320651'\n" + 
+                "    egrid = :egrid\n" + 
                 ")\n" + 
                 "SELECT\n" + 
                 "  foo.t_id,\n" + 
@@ -513,6 +524,8 @@ public class RestrictionOnLandownershipDAOImpl implements RestrictionOnLandowner
                 ") AS foo\n" + 
                 "WHERE\n" +
                 "    substring(foo.typ_kt FROM 1 FOR 4) IN ('N680','N681','N682','N683','N684','N685','N686')\n" +
+                "AND\n" + 
+                "  ST_Area(foo.geom) > 0.5\n" +                
                 "ORDER BY\n" + 
                 "  foo.typ_kt\n" + 
                 ";";    

@@ -61,7 +61,7 @@ public class RestrictionOnLandownershipServiceImpl implements RestrictionOnLando
         rolList.addAll(rolListErschliessungLinie);
         rolList.addAll(rolListErschliessungPunkt);
         rolList.addAll(rolListEmpfindlichkeitsstufen);
-
+        
         for (ROL rol : rolList) {
             RestrictionOnLandownership restrictionOnLandownership = objectFactory.createRestrictionOnLandownership();
             

@@ -31,11 +31,14 @@ CH984332068714
 CH669932068034 (Erschliessung)
 http://localhost:8888/landuseplans/extract/xml/CH987632068201 (viele kleine Strasseflächen -> ST_Union eingeführt)
 http://localhost:8888/landuseplans/extract/xml/CH154332870676
+
+http://localhost:8888/landuseplans/extract/html/?XY=2630993,1241640
+http://localhost:8888/landuseplans/getegrid/xml/?XY=2630993,1241640
 ```
 
 
 ## Notes
-Eigentich müsste über die t_id der Klasse "Typ" gegrouped werden. Diese ist im Pubmodell nicht vorhanden. Die Dokumente abfragen, würde auch über diese t_id gehen.
+- Eigentich müsste über die t_id der Klasse "Typ" gegrouped werden. Diese ist im Pubmodell nicht vorhanden. Die Dokumente abfragen, würde auch über diese t_id gehen.
+- LRO und Dorneck/Thierstein haben keine EGRID, d.h. Abfrage ist nicht möglich.
+- Geometrietoleranz: 0.5m resp. 0.5m2
 
-## TODO
-- 0.?? Geometrien nicht exportieren.

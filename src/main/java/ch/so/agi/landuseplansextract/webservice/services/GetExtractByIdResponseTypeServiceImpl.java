@@ -73,10 +73,9 @@ public class GetExtractByIdResponseTypeServiceImpl implements GetExtractByIdResp
         DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
         XMLGregorianCalendar creationDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
         extract.setCreationDate(creationDate);
-        
-
-
+      
         extract.setIsReduced(true);
+        
         extractByIdResponseType.setExtract(extract);
         return extractByIdResponseType;
     }

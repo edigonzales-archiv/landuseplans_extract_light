@@ -114,7 +114,7 @@
       </tr>
     </table>
     <xsl:for-each-group select="data:RestrictionOnLandownership" group-by="data:SubTheme">
-      <xsl:sort data-type="number" order="ascending" select="((data:SubTheme='Grundnutzung') * 1) + ((data:SubTheme='Überlagernde Festlegung') * 2) + ((data:SubTheme='Lärmempfindlichkeitsstufen (in Nutzungszonen)') * 3) + ((data:SubTheme='Erschliessung (Linienobjekt)') * 4) + ((data:SubTheme='Orange') * 5)"/>
+      <xsl:sort data-type="number" order="ascending" select="((data:SubTheme='Grundnutzung') * 1) + ((data:SubTheme='Überlagernde Festlegung') * 2) + ((data:SubTheme='Linienbezogene Festlegung') * 3) + ((data:SubTheme='Objektbezogene Festlegung') * 4) + ((data:SubTheme='Lärmempfindlichkeitsstufen (in Nutzungszonen)') * 5) + ((data:SubTheme='Erschliessung (Flächenobjekte)') * 6) + ((data:SubTheme='Erschliessung (Linienobjekt)') * 7) + ((data:SubTheme='Orange') * 99)"/>
       <details>
       <summary>
         <xsl:value-of select="data:SubTheme"/>
