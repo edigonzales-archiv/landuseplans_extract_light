@@ -2,9 +2,11 @@ package ch.so.agi.landuseplansextract.webservice.services;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.transform.stream.StreamSource;
@@ -12,9 +14,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -38,7 +44,14 @@ public class GetHtmlExtractByIdServiceImpl implements GetHtmlExtractByIdService 
     public File getExtract(String egrid) throws IOException, DatatypeConfigurationException, JAXBException, SaxonApiException {
         Path tempDir = Files.createTempDirectory("landuseplans_extract_");
 
-        File xsltFile = ResourceUtils.getFile("classpath:xslt/landuseplans_extract_html.xslt");
+        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
+        Resource xsltFileResource = resolver.getResource("classpath:xslt/landuseplans_extract_html.xslt");
+        InputStream xsltFileInputStream = xsltFileResource.getInputStream();
+        File xsltFile = new File(Paths.get(tempDir.toFile().getAbsolutePath(), "landuseplans_extract_html.xslt").toFile().getAbsolutePath());
+        Files.copy(xsltFileInputStream, xsltFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        xsltFileInputStream.close();
+
         File xmlFile = new File(Paths.get(tempDir.toFile().getAbsolutePath(), egrid + ".xml").toFile().getAbsolutePath());
         File htmlFile = new File(Paths.get(tempDir.toFile().getAbsolutePath(), egrid + ".html").toFile().getAbsolutePath());
         log.info(htmlFile.getAbsolutePath());

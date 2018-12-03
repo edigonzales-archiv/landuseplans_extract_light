@@ -1,6 +1,5 @@
 package ch.so.agi.landuseplansextract.webservice.services;
 
-import java.math.BigDecimal;
 import java.util.GregorianCalendar;
 import java.util.List;
 
